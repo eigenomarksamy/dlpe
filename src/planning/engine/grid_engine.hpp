@@ -1,11 +1,11 @@
 /**
- * @file grid_planner.hpp
+ * @file grid_engine.hpp
  * @author osamy
- * @brief grid_planner abstract class
+ * @brief grid planning engine abstract class
  */
 
-#ifndef PLANNER_H_
-#define PLANNER_H_
+#ifndef GRID_ENGINE_H_
+#define GRID_ENGINE_H_
 
 /**
  * <TODO: remove iostream include and use files logging>
@@ -26,7 +26,7 @@ namespace planning
  *  classes. the plan function is a pure virtual funciton that is overloaded
  *  <TODO: wrap types and log into out files>
  */
-class GPlanner_C
+class GPEngine_C
 {
 
 public:
@@ -35,7 +35,7 @@ public:
      * @param grid the grid on which the planner is to plan
      * @return no return value
      */
-    GPlanner_C(std::vector<std::vector<uint64_t>> grid)
+    GPEngine_C(std::vector<std::vector<uint64_t>> grid)
       : original_grid_(std::move(grid)), n_(original_grid_.size()){};
 
     /**
@@ -43,35 +43,35 @@ public:
      * @return no return
      * @details default
      */
-    GPlanner_C(const GPlanner_C&) = default;
+    GPEngine_C(const GPEngine_C&) = default;
 
     /**
      * @brief copy constructor
      * @return no return value
      * @details defautl
      */
-    GPlanner_C(GPlanner_C&&) = default;
+    GPEngine_C(GPEngine_C&&) = default;
 
     /**
      * @brief copy assignment
      * @return no return value
      * @details operator overloading
      */
-    GPlanner_C& operator=(const GPlanner_C&) = default;
+    GPEngine_C& operator=(const GPEngine_C&) = default;
 
     /**
      * @brief move assignment
      * @return no return value
      * @details operator overloading
      */
-    GPlanner_C& operator=(GPlanner_C&&) = default;
+    GPEngine_C& operator=(GPEngine_C&&) = default;
 
     /**
      * @brief virtual destructor
      * @return no return value
      * @details destructor
      */
-    virtual ~GPlanner_C() = default;
+    virtual ~GPEngine_C() = default;
 
     /**
      * @brief pure virtual function, overloaded by each of planners' implementations
@@ -105,4 +105,4 @@ protected:
 
 } // namespace planning
 
-#endif /* PLANNER_H_ */
+#endif /* GRID_ENGINE_H_ */
