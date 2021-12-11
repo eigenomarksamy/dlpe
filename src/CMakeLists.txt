@@ -4,3 +4,6 @@ project(main CXX)
 
 add_subdirectory(lib)
 add_subdirectory(planning)
+
+add_executable(main main/main.cpp)
+target_link_libraries(main planning)
