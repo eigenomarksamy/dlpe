@@ -19,15 +19,31 @@
 #include <limits>
 
 /* define colors */
-#define RESET   "\x1b[1;0m"
-#define BLACK   "\x1b[1;30m"
-#define RED     "\x1b[1;31m"
-#define GREEN   "\x1b[1;32m"
-#define YELLOW  "\x1b[1;33m"
-#define BLUE    "\x1b[1;34m"
-#define MAGENTA "\x1b[1;35m"
-#define CYAN    "\x1b[1;36m"
-#define WHITE   "\x1b[1;37m"
+#define RESET           "\x1b[0m"
+#define BLACK           "\x1b[1;30m"
+#define RED             "\x1b[1;31m"
+#define GREEN           "\x1b[1;32m"
+#define YELLOW          "\x1b[1;33m"
+#define BLUE            "\x1b[1;34m"
+#define MAGENTA         "\x1b[1;35m"
+#define CYAN            "\x1b[1;36m"
+#define WHITE           "\x1b[1;37m"
+#define BLACK_BOLD      "\x1b[0;30m"
+#define RED_BOLD        "\x1b[0;31m"
+#define GREEN_BOLD      "\x1b[0;32m"
+#define YELLOW_BOLD     "\x1b[0;33m"
+#define BLUE_BOLD       "\x1b[0;34m"
+#define MAGENTA_BOLD    "\x1b[0;35m"
+#define CYAN_BOLD       "\x1b[0;36m"
+#define WHITE_BOLD      "\x1b[0;37m"
+#define BLACK_HL        "\x1b[1;30;40m"
+#define RED_HL          "\x1b[1;30;41m"
+#define GREEN_HL        "\x1b[1;30;42m"
+#define YELLOW_HL       "\x1b[1;30;43m"
+#define BLUE_HL         "\x1b[1;30;44m"
+#define MAGENTA_HL      "\x1b[1;30;45m"
+#define CYAN_HL         "\x1b[1;30;46m"
+#define WHITE_HL        "\x1b[1;30;47m"
 
 /**
  * @brief node class
@@ -37,17 +53,17 @@ class Node_C
 {
 public:
     /** \brief x coordinate */
-    uint64_t x_;
+    int64_t x_;
     /** \brief y coordinate */
-    uint64_t y_;
+    int64_t y_;
     /** \brief cost to reach this node */
     double cost_;
     /** \brief heuristic cost to reach the goal */
     double hCost_;
     /** \brief node id */
-    uint64_t id_;
+    int64_t id_;
     /** \brief node's parent's id */
-    uint64_t pId_;
+    int64_t pId_;
 
     /**
      * @brief constructor for node class
@@ -58,8 +74,8 @@ public:
      * @param id - node id
      * @param pId - parent id
      */
-    Node_C(const uint64_t x = 0, const uint64_t y = 0, const double cost = 0,
-           const double hCost = 0, const uint64_t id = 0, const uint64_t pId = 0) :
+    Node_C(const int64_t x = 0, const int64_t y = 0, const double cost = 0,
+           const double hCost = 0, const int64_t id = 0, const int64_t pId = 0) :
            x_(x), y_(y), cost_(cost), hCost_(hCost), id_(id), pId_(pId) {}
 
     /**
@@ -103,7 +119,7 @@ public:
      * @return hash value
      */
     size_t operator () (const Node_C& n) const {
-        return std::hash<uint64_t>()(n.x_) ^ std::hash<uint64_t>()(n.y_);
+        return std::hash<int64_t>()(n.x_) ^ std::hash<int64_t>()(n.y_);
     }
 };
 
@@ -169,7 +185,7 @@ std::vector<Node_C> getPermissibleMotion();
 void printPath(const std::vector<Node_C>& pathVec,
                const Node_C& start_,
                const Node_C& goal_,
-               std::vector<std::vector<uint64_t>>& grid);
+               std::vector<std::vector<int64_t>>& grid);
 
 /**
  * @brief prints the cost for reaching points on the grid in the grid shape
@@ -177,7 +193,7 @@ void printPath(const std::vector<Node_C>& pathVec,
  * @param pointVec - vector of all points that have been considered. nodes in vector contain cost.
  * @return void
  */
-void printCost(const std::vector<std::vector<uint64_t>>& grid,
+void printCost(const std::vector<std::vector<int64_t>>& grid,
                const std::vector<Node_C>& pointVec);
 
 /**
@@ -185,7 +201,7 @@ void printCost(const std::vector<std::vector<uint64_t>>& grid,
 * @param grid - referenct to grid
 * @return void
 */
-void makeGrid(std::vector<std::vector<uint64_t>>& grid);
+void makeGrid(std::vector<std::vector<int64_t>>& grid);
 
 /**
  * @brief prints the grid passed, highlighting the path taken, when the vector
@@ -197,7 +213,7 @@ void makeGrid(std::vector<std::vector<uint64_t>>& grid);
  * @return void
  */
 void printPathInOrder(const std::vector<Node_C>& pathVector, const Node_C& start,
-                      const Node_C& goal, std::vector<std::vector<uint64_t>>& grid);
+                      const Node_C& goal, std::vector<std::vector<int64_t>>& grid);
 
 /**
  * @brief compare coordinates between 2 nodes
@@ -213,19 +229,21 @@ bool compareCoordinates(const Node_C& p1, const Node_C& p2);
  * @param n - size of the grid
  * @return whether the node is outside the boundary of the grid
  */
-bool checkOutsideBoundary(const Node_C& node, const uint64_t n);
+bool checkOutsideBoundary(const Node_C& node, const int64_t n);
 
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
 void printGrid(const std::vector<std::vector<T>>& grid)
 {
-    uint64_t n = grid.size();
+    int64_t n = grid.size();
     std::cout << "Grid: " << '\n'
               << "1. Points not considered ---> 0" << '\n'
               << "2. Obstacles             ---> 1" << '\n'
               << "3. Points considered     ---> 2" << '\n'
-              << "4. Points in final path  ---> 3" << '\n';
+              << "4. Points in final path  ---> 3" << '\n'
+              << "5. Start point           ---> 4" << '\n'
+              << "6. Goal point            ---> 5" << '\n';
 
-    for (uint64_t j = 0; j < n; j++)
+    for (int64_t j = 0; j < n; j++)
     {
         std::cout << "---";
     }
@@ -251,6 +269,14 @@ void printGrid(const std::vector<std::vector<T>>& grid)
             {
                 std::cout << YELLOW << ele << RESET << " , ";
             }
+            else if (ele == 5)
+            {
+                std::cout << MAGENTA << ele << RESET << " , ";
+            }
+            else if (ele == 6)
+            {
+                std::cout << MAGENTA << ele << RESET << " , ";
+            }
             else if (ele == std::numeric_limits<double>::max())
             {
                 std::cout << CYAN << "I" << RESET << " , ";
@@ -263,7 +289,7 @@ void printGrid(const std::vector<std::vector<T>>& grid)
         std::cout << '\n' << '\n';
     }
 
-    for (uint64_t j = 0; j < n; j++) {
+    for (int64_t j = 0; j < n; j++) {
         std::cout << "---";
     }
     std::cout << '\n';

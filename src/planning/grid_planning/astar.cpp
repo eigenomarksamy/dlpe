@@ -9,9 +9,9 @@
 #include <unordered_set>
 #include <vector>
 
-#ifdef STANDALONE_BUILD
+#ifdef STANDALONE_BUILD_ASTAR
 #include <random>
-#endif /* STANDALONE_BUILD */
+#endif /* STANDALONE_BUILD_ASTAR */
 
 #include "astar.hpp"
 
@@ -95,7 +95,7 @@ std::vector<Node_C> planning::AStar_C::convertClosedList2Path(
     return path;
 }
 
-#ifdef STANDALONE_BUILD
+#ifdef STANDALONE_BUILD_ASTAR
 /**
  * @brief script main function. generates start and end nodes as well as grid,
  * then creates the algorithm object and calls the main algorithm function.
@@ -104,13 +104,13 @@ std::vector<Node_C> planning::AStar_C::convertClosedList2Path(
 int main()
 {
     constexpr int n = 11;
-    std::vector<std::vector<uint64_t>> grid(n, std::vector<uint64_t>(n, 0));
+    std::vector<std::vector<int64_t>> grid(n, std::vector<int64_t>(n, 0));
 
     makeGrid(grid);
 
     std::random_device rd;
     std::mt19937 eng(rd());
-    std::uniform_int_distribution<uint64_t> distr(0, n - 1);
+    std::uniform_int_distribution<int64_t> distr(0, n - 1);
 
     Node_C start(distr(eng), distr(eng), 0, 0, 0, 0);
     Node_C goal(distr(eng), distr(eng), 0, 0, 0, 0);
@@ -135,4 +135,4 @@ int main()
 
     return 0;
 }
-#endif /* STANDALONE_BUILD */
+#endif /* STANDALONE_BUILD_ASTAR */

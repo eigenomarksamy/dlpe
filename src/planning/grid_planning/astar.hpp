@@ -26,7 +26,7 @@ public:
      * @param grid - grid map for the planning task
      * @return none
      */
-    explicit AStar_C(std::vector<std::vector<uint64_t>> grid)
+    explicit AStar_C(std::vector<std::vector<int64_t>> grid)
                 : GPEngine_C(std::move(grid)) {}
 
     /**
