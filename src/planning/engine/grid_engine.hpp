@@ -35,7 +35,7 @@ public:
      * @param grid the grid on which the planner is to plan
      * @return no return value
      */
-    GPEngine_C(std::vector<std::vector<uint64_t>> grid)
+    GPEngine_C(std::vector<std::vector<int64_t>> grid)
       : original_grid_(std::move(grid)), n_(original_grid_.size()){};
 
     /**
@@ -89,7 +89,7 @@ public:
     * @details set separately from the plan function to allow this to persist between calls to plan()
     */
     virtual void setDynamicObstacles(const bool createRandObst = false,
-                                     const std::unordered_map<uint64_t, std::vector<Node_C>>& timeDiscObst = {})
+                                     const std::unordered_map<int64_t, std::vector<Node_C>>& timeDiscObst = {})
     {
         std::cout << "Please implement this function for the planner" << '\n';
         std::cout << "Value attempted to be set: " << '\n';
@@ -98,9 +98,9 @@ public:
     };
 
 protected:
-    std::vector<std::vector<uint64_t>> grid_ = {};
-    const std::vector<std::vector<uint64_t>> original_grid_;
-    const uint64_t n_;
+    std::vector<std::vector<int64_t>> grid_ = {};
+    const std::vector<std::vector<int64_t>> original_grid_;
+    const int64_t n_;
 };
 
 } // namespace planning
