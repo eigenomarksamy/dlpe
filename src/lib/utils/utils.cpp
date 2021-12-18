@@ -17,7 +17,7 @@
 #include "utils.hpp"
 
 // constants
-constexpr uint64_t spacing_for_grid = 10;
+constexpr int64_t spacing_for_grid = 10;
 
 void Node_C::printStatus() const
 {
@@ -55,7 +55,7 @@ bool compareCoordinates(const Node_C& p1, const Node_C& p2)
 {
     return p1.x_ == p2.x_ && p1.y_ == p2.y_;
 }
-bool checkOutsideBoundary(const Node_C& node, const uint64_t n)
+bool checkOutsideBoundary(const Node_C& node, const int64_t n)
 {
     return (node.x_ < 0 || node.y_ < 0
         || node.x_ >= n || node.y_ >= n);
@@ -93,16 +93,16 @@ std::vector<Node_C> getPermissibleMotion()
     // diagonal/ any other motions
 }
 
-void makeGrid(std::vector<std::vector<uint64_t>>& grid)
+void makeGrid(std::vector<std::vector<int64_t>>& grid)
 {
-    uint64_t n = grid.size();
+    int64_t n = grid.size();
     std::random_device rd;   // obtain a random number from hardware
     std::mt19937 eng(rd());  // seed the generator
-    std::uniform_int_distribution<uint64_t> distr(0, n);  // define the range
+    std::uniform_int_distribution<int64_t> distr(0, n);  // define the range
 
-    for (uint64_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
     {
-        for (uint64_t j = 0; j < n; j++)
+        for (int64_t j = 0; j < n; j++)
         {
             grid[i][j] = distr(eng) / ((n - 1));  // probability of obstacle is 1/n
             // grid[i][j] = 0; // For no obstacles
@@ -110,8 +110,8 @@ void makeGrid(std::vector<std::vector<uint64_t>>& grid)
     }
 }
 
-void PrintPath(const std::vector<Node_C>& pathVec, const Node_C& start,
-               const Node_C& goal, std::vector<std::vector<uint64_t>>& grid)
+void printPath(const std::vector<Node_C>& pathVec, const Node_C& start,
+               const Node_C& goal, std::vector<std::vector<int64_t>>& grid)
 {
 #ifdef CUSTOM_DEBUG_HELPER_FUNCION
     if (pathVec.empty())
@@ -146,20 +146,21 @@ void PrintPath(const std::vector<Node_C>& pathVec, const Node_C& start,
             break;
         }
     }
-    grid[start.x_][start.y_] = 3;
+    grid[goal.x_][goal.y_] = 6;
+    grid[start.x_][start.y_] = 5;
     printGrid(grid);
 #endif  // CUSTOM_DEBUG_HELPER_FUNCION
 }
 
-void printCost(const std::vector<std::vector<uint64_t>>& grid,
+void printCost(const std::vector<std::vector<int64_t>>& grid,
                const std::vector<Node_C>& pointVec)
 {
 #ifdef CUSTOM_DEBUG_HELPER_FUNCION
-    uint64_t n = grid.size();
+    int64_t n = grid.size();
     std::vector<Node_C>::const_iterator it_v;
-    for (uint64_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++)
     {
-        for (uint64_t j = 0; j < n; j++)
+        for (int64_t j = 0; j < n; j++)
         {
             for (it_v = pointVec.begin(); it_v != pointVec.end(); ++it_v)
             {
@@ -181,7 +182,7 @@ void printCost(const std::vector<std::vector<uint64_t>>& grid,
 
 void printPathInOrder(const std::vector<Node_C>& pathVec,
                       const Node_C& start, const Node_C& goal,
-                      std::vector<std::vector<uint64_t>>& grid)
+                      std::vector<std::vector<int64_t>>& grid)
 {
 #ifdef CUSTOM_DEBUG_HELPER_FUNCION
     if (pathVec.empty())
