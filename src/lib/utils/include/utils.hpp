@@ -175,45 +175,11 @@ struct compare_coord_S
 std::vector<Node_C> getPermissibleMotion();
 
 /**
- * @brief print the grid passed, highlighting the path taken
- * @param pathVec - path vector
- * @param start_ - start node
- * @param goal_ - goal node
- * @param grid - grid to work with
- * @return void
- */
-void printPath(const std::vector<Node_C>& pathVec,
-               const Node_C& start_,
-               const Node_C& goal_,
-               std::vector<std::vector<int64_t>>& grid);
-
-/**
- * @brief prints the cost for reaching points on the grid in the grid shape
- * @param grid - grid on which algorithm is running
- * @param pointVec - vector of all points that have been considered. nodes in vector contain cost.
- * @return void
- */
-void printCost(const std::vector<std::vector<int64_t>>& grid,
-               const std::vector<Node_C>& pointVec);
-
-/**
 * @brief creates a random grid of a given size
 * @param grid - referenct to grid
 * @return void
 */
 void makeGrid(std::vector<std::vector<int64_t>>& grid);
-
-/**
- * @brief prints the grid passed, highlighting the path taken, when the vector
- * is the path taken in order
- * @param pathVec - the path vector
- * @param start - start node
- * @param goal - goal node
- * @param grid - reference to grid
- * @return void
- */
-void printPathInOrder(const std::vector<Node_C>& pathVector, const Node_C& start,
-                      const Node_C& goal, std::vector<std::vector<int64_t>>& grid);
 
 /**
  * @brief compare coordinates between 2 nodes
@@ -474,5 +440,47 @@ private:
   // needs to just compare the coordinates and
   std::unordered_set<node_key_pair_S, std::hash<node_key_pair_S>, compare_node_key_pair_coords_S> s;
 };
+
+/* functions from printer utilities */
+/**
+ * @brief print the node status
+ * @param node - node to be printed
+ * @return void
+ */
+void printNodeStatus(const Node_C& node);
+
+/**
+ * @brief print the grid passed, highlighting the path taken
+ * @param pathVec - path vector
+ * @param start_ - start node
+ * @param goal_ - goal node
+ * @param grid - grid to work with
+ * @return void
+ */
+void printPath(const std::vector<Node_C>& pathVec,
+               const Node_C& start_,
+               const Node_C& goal_,
+               std::vector<std::vector<int64_t>>& grid);
+
+/**
+ * @brief prints the cost for reaching points on the grid in the grid shape
+ * @param grid - grid on which algorithm is running
+ * @param pointVec - vector of all points that have been considered. nodes in vector contain cost.
+ * @return void
+ */
+void printCost(const std::vector<std::vector<int64_t>>& grid,
+               const std::vector<Node_C>& pointVec);
+
+/**
+ * @brief prints the grid passed, highlighting the path taken, when the vector
+ * is the path taken in order
+ * @param pathVec - the path vector
+ * @param start - start node
+ * @param goal - goal node
+ * @param grid - reference to grid
+ * @return void
+ */
+void printPathInOrder(const std::vector<Node_C>& pathVector, const Node_C& start,
+                      const Node_C& goal, std::vector<std::vector<int64_t>>& grid);
 
 #endif /* UTILS_H_ */
