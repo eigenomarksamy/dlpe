@@ -2,7 +2,8 @@
  * @file utils.hpp
  * @author osamy
  * @brief common functionalities and classes
- * for references see https://github.com/vss2sn/path_planning/blob/master/lib/utils/include/utils/utils.hpp
+ * for some references see:
+ * https://github.com/vss2sn/path_planning/blob/master/lib/utils/include/utils/utils.hpp
  */
 
 #ifndef UTILS_H_
@@ -17,6 +18,10 @@
 #include <unordered_set>
 #include <vector>
 #include <limits>
+#include <string>
+#include <memory>
+#include <fstream>
+#include <iomanip>
 
 /* define colors */
 #define RESET           "\x1b[0m"
@@ -480,5 +485,198 @@ void printCost(const std::vector<std::vector<int64_t>>& grid,
  */
 void printPathInOrder(const std::vector<Node_C>& pathVector, const Node_C& start,
                       const Node_C& goal, std::vector<std::vector<int64_t>>& grid);
+
+/* functions from logger utilities */
+
+struct data_logger_S
+{
+    /** @brief cycle count */
+    uint64_t cycleNum;
+    /** @brief grid */
+    std::vector<std::vector<int64_t>> grid;
+    /** @brief path vector */
+    std::vector<Node_C> pathVec;
+    /** @brief point vector */
+    std::vector<Node_C> pointVec;
+    /** @brief start node */
+    Node_C startNode;
+    /** @brief goal node */
+    Node_C goalNode;
+};
+
+/**
+ * @brief function to update vector for logger data
+ * @param dataVec - vector to be updated
+ * @param idx - index
+ * @param grid - grid map
+ * @param pathVec - vector of path
+ * @param pointVec - vector of point
+ * @param startNode - start node
+ * @param goalNode - goal node
+ */
+void updateDataVector(std::vector<data_logger_S>& dataVec,
+                      const uint64_t idx,
+                      const std::vector<std::vector<int64_t>> grid,
+                      const std::vector<Node_C> pathVec,
+                      const std::vector<Node_C> pointVec,
+                      const Node_C startNode,
+                      const Node_C goalNode);
+
+/**
+ * @brief function to encapsulate logger class
+ * @param dataVec - vector to be written
+ * @returns validity flag
+ */
+bool generateLogs(const std::vector<data_logger_S>& dataVec);
+
+/**
+ * @brief overload function to encapsulate logger class
+ * @param dataVec - vector to be written
+ * @param outExtension - output file extension
+ * @returns validity flag
+ */
+bool generateLogs(const std::vector<data_logger_S>& dataVec,
+                  const std::string& outExtension);
+
+/**
+ * @brief overload function to encapsulate logger class
+ * @param dataVec - vector to be written
+ * @param outExtension - output file extension
+ * @param outName - output file name
+ * @returns validity flag
+ */
+bool generateLogs(const std::vector<data_logger_S>& dataVec,
+                  const std::string& outExtension,
+                  const std::string& outName);
+
+/**
+ * @brief function to encapsulate logger class
+ * @param dataVec - vector to be written
+ * @param outExtension - output file extension
+ * @param outName - output file name
+ * @param outPath - output path
+ * @returns validity flag
+ */
+bool generateLogs(const std::vector<data_logger_S>& dataVec,
+                  const std::string& outExtension,
+                  const std::string& outName,
+                  const std::string& outPath);
+
+/**
+ * @brief logger class
+ */
+class Logger_C
+{
+
+public:
+
+    enum extension_E
+    {
+        EXTENSION_NON = 0,
+        EXTENSION_TXT,
+        EXTENSION_CSV,
+        EXTENSION_NUM
+    };
+
+    /**
+     * @brief default constructor for logger class
+     * @details in case of this constructor is called:
+     *      extension is set to default (.txt),
+     *      file name is generated automatically, and
+     *      path is set to default path (<project_home>/gen/logger/)
+     */
+    Logger_C() : Logger_C("txt",
+                          "outFileTxt",
+                          "../gen/logger/") {}
+
+    /**
+     * @brief constructor for logger class
+     * @details in case of this constructor is called:
+     *      extension is explicitly provided,
+     *      file name is generated automatically, and
+     *      path is set to default path (<project_home>/gen/logger/)
+     * @param extension - path in which file shall be generated
+     */
+    Logger_C(std::string extension) : Logger_C(extension,
+                                               "outFile",
+                                               "../gen/logger/") {}
+
+    /**
+     * @brief constructor for logger class
+     * @details in case of this constructor is called:
+     *      extension is explicitly provided,
+     *      file name is explicitly provided, and
+     *      path is set to default path (<project_home>/gen/logger/)
+     * @param extension - path in which file shall be generated
+     * @param name - file name required
+     */
+    Logger_C(std::string extension, std::string name) : Logger_C(extension, name, "../gen/logger/") {}
+
+    /**
+     * @brief constructor for logger class
+     * @details in case of this constructor is called:
+     *      extension is explicitly provided,
+     *      file name is explicitly provided, and
+     *      path is explicitly provided
+     * @param extension - file extension
+     * @param name - file name required
+     * @param path - path in which file shall be generated
+     */
+    Logger_C(const std::string& extension,
+             const std::string& name,
+             const std::string& path);
+
+    /**
+     * @brief default destructor for logger class,
+     * @details checks if the file is open and closes it
+     */
+    ~Logger_C();
+
+    /**
+     * @brief sets the data vector
+     * @param dataVec - data vector to be set
+     */
+    void setDataVec(const std::vector<data_logger_S>& dataVec) { dataVec_ = dataVec; }
+
+    /**
+     * @brief writes out the data to file
+     * @returns validity flag
+     */
+    bool writeDataToFile();
+
+private:
+
+    /** \brief final file object */
+    std::unique_ptr<std::ofstream> fileToWrite_;
+
+    /** \brief final vector of data */
+    std::vector<data_logger_S> dataVec_;
+
+    /** \brief file name */
+    std::string fileName_;
+
+    /**
+     * @brief sets the file name member
+     */
+    void setFileName(std::string fileName) { fileName_ = fileName; }
+
+    /**
+     * @brief extracts the extension of the file
+     * @returns extension
+     */
+    extension_E extractExtension() const;
+
+    /**
+     * @brief writes data to text file
+     * @returns validity flag
+     */
+    bool writeDataToTxt();
+
+    /**
+     * @brief writes data to comma seperated value file
+     * @returns validity flag
+     */
+    bool writeDataToCsv();
+};
 
 #endif /* UTILS_H_ */

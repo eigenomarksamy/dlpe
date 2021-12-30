@@ -8,6 +8,7 @@ target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SOURCES_CPP
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/printer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/logger.cpp
 )
 
 target_sources(utils PRIVATE ${SOURCES_CPP})

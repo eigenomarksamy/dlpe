@@ -4,10 +4,6 @@
  * @brief this is a file to be used to print data
  */
 
-/* C/C++ standard includes */
-#include <iostream>
-#include <iomanip>
-
 /* project-specific includes */
 #include "utils.hpp"
 
