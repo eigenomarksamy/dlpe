@@ -26,14 +26,16 @@ static void execAStar(Node_C& startNode, Node_C& goalNode, std::vector<std::vect
     planning::AStar_C aStar(grid);
     {
         const auto [pathFound, pathVec] = aStar.plan(startNode, goalNode);
+#ifdef ENABLE_PRINTER_DISPLAY
         printPath(pathVec, startNode, goalNode, grid);
+#endif /* ENABLE_PRINTER_DISPLAY */
     }
 }
 
 #ifndef STANDALONE_BUILD
 int main() {
 
-    constexpr int64_t n = 21;
+    constexpr int64_t n = 33;
     std::vector<std::vector<int64_t>> grid(n, std::vector<int64_t>(n, 0));
     makeGrid(grid);
 
@@ -54,7 +56,9 @@ int main() {
     /* make sure start and goal are not obstacles and their ids are correctly assigned */
     grid[start.x_][start.y_] = 0;
     grid[goal.x_][goal.y_] = 0;
+#ifdef ENABLE_PRINTER_DISPLAY
     printGrid(grid);
+#endif /* ENABLE_PRINTER_DISPLAY */
 
     /* store point after algorithm's run */
     std::vector<std::vector<int64_t>> mainGrid = grid;

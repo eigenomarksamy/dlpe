@@ -64,8 +64,8 @@ void printPath(const std::vector<Node_C>& pathVec, const Node_C& start,
             break;
         }
     }
-    grid[goal.x_][goal.y_] = 6;
-    grid[start.x_][start.y_] = 5;
+    grid[goal.x_][goal.y_] = 5;
+    grid[start.x_][start.y_] = 4;
     printGrid(grid);
 #endif  // CUSTOM_DEBUG_HELPER_FUNCION
 }

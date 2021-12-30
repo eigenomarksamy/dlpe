@@ -197,70 +197,6 @@ bool compareCoordinates(const Node_C& p1, const Node_C& p2);
  */
 bool checkOutsideBoundary(const Node_C& node, const int64_t n);
 
-template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
-void printGrid(const std::vector<std::vector<T>>& grid)
-{
-    int64_t n = grid.size();
-    std::cout << "Grid: " << '\n'
-              << "1. Points not considered ---> 0" << '\n'
-              << "2. Obstacles             ---> 1" << '\n'
-              << "3. Points considered     ---> 2" << '\n'
-              << "4. Points in final path  ---> 3" << '\n'
-              << "5. Start point           ---> 4" << '\n'
-              << "6. Goal point            ---> 5" << '\n';
-
-    for (int64_t j = 0; j < n; j++)
-    {
-        std::cout << "---";
-    }
-    std::cout << '\n';
-
-    for (const auto& row : grid)
-    {
-        for (const auto& ele : row)
-        {
-            if (ele == 1)
-            {
-                std::cout << RED << ele << RESET << " , ";
-            }
-            else if (ele == 2)
-            {
-                std::cout << BLUE << ele << RESET << " , ";
-            }
-            else if (ele == 3)
-            {
-                std::cout << GREEN << ele << RESET << " , ";
-            }
-            else if (ele == 4)
-            {
-                std::cout << YELLOW << ele << RESET << " , ";
-            }
-            else if (ele == 5)
-            {
-                std::cout << MAGENTA << ele << RESET << " , ";
-            }
-            else if (ele == 6)
-            {
-                std::cout << MAGENTA << ele << RESET << " , ";
-            }
-            else if (ele == std::numeric_limits<double>::max())
-            {
-                std::cout << CYAN << "I" << RESET << " , ";
-            }
-            else
-            {
-                std::cout << ele << " , ";
-            }
-        }
-        std::cout << '\n' << '\n';
-    }
-
-    for (int64_t j = 0; j < n; j++) {
-        std::cout << "---";
-    }
-    std::cout << '\n';
-}
-
 /**
  * @brief struct to generate a hash for std::pair
  * @details this allows the use of pairs in data structures that use a hash,
@@ -440,6 +376,68 @@ private:
   // needs to just compare the coordinates and
   std::unordered_set<node_key_pair_S, std::hash<node_key_pair_S>, compare_node_key_pair_coords_S> s;
 };
+
+template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
+void printGrid(const std::vector<std::vector<T>>& grid)
+{
+    int64_t n = grid.size();
+    std::cout << "Grid: " << '\n'
+              << "-Points not considered ---> 0" << '\n'
+              << "-Obstacles             ---> 1" << '\n'
+              << "-Points considered     ---> 2" << '\n'
+              << "-Points in final path  ---> 3" << '\n'
+              << "-Start point           ---> 4" << '\n'
+              << "-Goal point            ---> 5" << '\n'
+              << "-Invalid point         ---> I" << '\n'
+              << "-Size                  ---> " << n << '\n';
+
+    for (int64_t j = 0; j < n; j++)
+    {
+        std::cout << "---";
+    }
+    std::cout << '\n';
+
+    for (const auto& row : grid)
+    {
+        for (const auto& ele : row)
+        {
+            if (ele == 1)
+            {
+                std::cout << RED << ele << RESET << " , ";
+            }
+            else if (ele == 2)
+            {
+                std::cout << MAGENTA << ele << RESET << " , ";
+            }
+            else if (ele == 3)
+            {
+                std::cout << BLUE << ele << RESET << " , ";
+            }
+            else if (ele == 4)
+            {
+                std::cout << YELLOW << ele << RESET << " , ";
+            }
+            else if (ele == 5)
+            {
+                std::cout << GREEN << ele << RESET << " , ";
+            }
+            else if (ele == std::numeric_limits<double>::max())
+            {
+                std::cout << CYAN << "I" << RESET << " , ";
+            }
+            else
+            {
+                std::cout << ele << " , ";
+            }
+        }
+        std::cout << '\n' << '\n';
+    }
+
+    for (int64_t j = 0; j < n; j++) {
+        std::cout << "---";
+    }
+    std::cout << '\n';
+}
 
 /* functions from printer utilities */
 /**

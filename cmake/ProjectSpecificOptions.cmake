@@ -12,7 +12,13 @@ cmake_dependent_option( CHECK_COVERAGE "Run code coverage check" OFF "RUN_TESTS"
 # default OFF, change by user input if and only if condition allows (RUN_TESTS=ON)
 cmake_dependent_option( CUSTOM_DEBUG_HELPER_FUNCION "Build custom debug helper functions" ON "NOT ENABLE_COVERAGE" OFF)
 # default ON, change by user input if and only if condition allows (ENABLE_COVERAGE=OFF)
+cmake_dependent_option( PRINTER_DISPLAYS "Printer displays activation" ON "CUSTOM_DEBUG_HELPER_FUNCION" ON)
+# default ON, change by user input if and only if condition allows (CUSTOM_DEBUG_HELPER_FUNCION=ON)
 
 if(CUSTOM_DEBUG_HELPER_FUNCION)
   add_definitions(-DCUSTOM_DEBUG_HELPER_FUNCION)
 endif(CUSTOM_DEBUG_HELPER_FUNCION)
+
+if (PRINTER_DISPLAYS)
+add_definitions(-DENABLE_PRINTER_DISPLAY)
+endif(PRINTER_DISPLAYS)
