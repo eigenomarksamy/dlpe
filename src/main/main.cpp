@@ -22,13 +22,21 @@ static void execAStar(Node_C& startNode, Node_C& goalNode, std::vector<std::vect
 
 static void execAStar(Node_C& startNode, Node_C& goalNode, std::vector<std::vector<int64_t>>& grid)
 {
+#ifdef ENABLE_PRINTER_DISPLAY
     std::cout << "algorithm: a*\n";
+#endif /* ENABLE_PRINTER_DISPLAY */
     planning::AStar_C aStar(grid);
     {
         const auto [pathFound, pathVec] = aStar.plan(startNode, goalNode);
 #ifdef ENABLE_PRINTER_DISPLAY
         printPath(pathVec, startNode, goalNode, grid);
 #endif /* ENABLE_PRINTER_DISPLAY */
+        std::vector<data_logger_S> dataVec;
+        const uint8_t logBitMap = ENABLE_LOGGER_CYCLE | ENABLE_LOGGER_GRID
+                                  | ENABLE_LOGGER_PATH | ENABLE_LOGGER_POINT
+                                  | ENABLE_LOGGER_START | ENABLE_LOGGER_GOAL;
+        updateDataVector(dataVec, 0, grid, pathVec, pathVec, startNode, goalNode);
+        generateLogs(logBitMap, dataVec);
     }
 }
 
