@@ -39,7 +39,7 @@ void printPath(const std::vector<Node_C>& pathVec, const Node_C& start,
     {
         if (compareCoordinates(goal, pathVec[i]))
         {
-            pathVec[i].printStatus();
+            printNodeStatus(pathVec[i]);
             grid[pathVec[i].x_][pathVec[i].y_] = 3;
             while (pathVec[i].id_ != start.id_)
             {
@@ -52,7 +52,7 @@ void printPath(const std::vector<Node_C>& pathVec, const Node_C& start,
                     if (pathVec[i].pId_ == pathVec[j].id_)
                     {
                         i = j;
-                        pathVec[j].printStatus();
+                        printNodeStatus(pathVec[j]);
                         grid[pathVec[j].x_][pathVec[j].y_] = 3;
                     }
                 }
@@ -113,10 +113,10 @@ void printPathInOrder(const std::vector<Node_C>& pathVec,
     }
     for (; i > 0; i = i - 1)
     {
-        pathVec[i].printStatus();
+        printNodeStatus(pathVec[i]);
         grid[pathVec[i].x_][pathVec[i].y_] = 3;
     }
-    pathVec[0].printStatus();
+    printNodeStatus(pathVec[0]);
     grid[pathVec[0].x_][pathVec[0].y_] = 3;
     printGrid(grid);
 #endif  // CUSTOM_DEBUG_HELPER_FUNCION
