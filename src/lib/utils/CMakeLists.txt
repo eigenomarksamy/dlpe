@@ -20,3 +20,4 @@ set_target_properties(utils
                       CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Wall -Werror -g"
 )
 # target_link_libraries(utils PRIVATE project_options project_warnings)
+target_link_libraries(utils PRIVATE -lstdc++fs)

@@ -22,6 +22,8 @@
 #include <memory>
 #include <fstream>
 #include <iomanip>
+#include <filesystem>
+#include <sys/stat.h>
 
 /* define colors */
 #define RESET           "\x1b[0m"
@@ -49,6 +51,26 @@
 #define MAGENTA_HL      "\x1b[1;30;45m"
 #define CYAN_HL         "\x1b[1;30;46m"
 #define WHITE_HL        "\x1b[1;30;47m"
+
+#define ENABLE_LOGGER_CYCLE (1 << 1)
+#define ENABLE_LOGGER_GRID (1 << 2)
+#define ENABLE_LOGGER_PATH (1 << 3)
+#define ENABLE_LOGGER_POINT (1 << 4)
+#define ENABLE_LOGGER_START (1 << 5)
+#define ENABLE_LOGGER_GOAL (1 << 6)
+
+/* define enums */
+enum data_logger_E
+{
+    DATA_LOGGER_NONE = 0,
+    DATA_LOGGER_CYCLE,
+    DATA_LOGGER_GRID,
+    DATA_LOGGER_PATH,
+    DATA_LOGGER_POINT,
+    DATA_LOGGER_START,
+    DATA_LOGGER_GOAL,
+    DATA_LOGGER_LEN
+};
 
 /**
  * @brief node class
@@ -505,64 +527,6 @@ struct data_logger_S
 };
 
 /**
- * @brief function to update vector for logger data
- * @param dataVec - vector to be updated
- * @param idx - index
- * @param grid - grid map
- * @param pathVec - vector of path
- * @param pointVec - vector of point
- * @param startNode - start node
- * @param goalNode - goal node
- */
-void updateDataVector(std::vector<data_logger_S>& dataVec,
-                      const uint64_t idx,
-                      const std::vector<std::vector<int64_t>> grid,
-                      const std::vector<Node_C> pathVec,
-                      const std::vector<Node_C> pointVec,
-                      const Node_C startNode,
-                      const Node_C goalNode);
-
-/**
- * @brief function to encapsulate logger class
- * @param dataVec - vector to be written
- * @returns validity flag
- */
-bool generateLogs(const std::vector<data_logger_S>& dataVec);
-
-/**
- * @brief overload function to encapsulate logger class
- * @param dataVec - vector to be written
- * @param outExtension - output file extension
- * @returns validity flag
- */
-bool generateLogs(const std::vector<data_logger_S>& dataVec,
-                  const std::string& outExtension);
-
-/**
- * @brief overload function to encapsulate logger class
- * @param dataVec - vector to be written
- * @param outExtension - output file extension
- * @param outName - output file name
- * @returns validity flag
- */
-bool generateLogs(const std::vector<data_logger_S>& dataVec,
-                  const std::string& outExtension,
-                  const std::string& outName);
-
-/**
- * @brief function to encapsulate logger class
- * @param dataVec - vector to be written
- * @param outExtension - output file extension
- * @param outName - output file name
- * @param outPath - output path
- * @returns validity flag
- */
-bool generateLogs(const std::vector<data_logger_S>& dataVec,
-                  const std::string& outExtension,
-                  const std::string& outName,
-                  const std::string& outPath);
-
-/**
  * @brief logger class
  */
 class Logger_C
@@ -627,10 +591,9 @@ public:
              const std::string& path);
 
     /**
-     * @brief default destructor for logger class,
-     * @details checks if the file is open and closes it
+     * @brief default destructor for logger class
      */
-    ~Logger_C();
+    ~Logger_C() {}
 
     /**
      * @brief sets the data vector
@@ -640,17 +603,26 @@ public:
 
     /**
      * @brief writes out the data to file
-     * @returns validity flag
+     * @return validity flag
      */
     bool writeDataToFile();
+
+    /**
+     * @brief sets the array of enable/disable logging
+     * @return void
+     */
+    void setLogBitMap(const uint8_t bitMap);
 
 private:
 
     /** \brief final file object */
-    std::unique_ptr<std::ofstream> fileToWrite_;
+    std::shared_ptr<std::ostream> p_fileToWrite_{ nullptr };
 
     /** \brief final vector of data */
     std::vector<data_logger_S> dataVec_;
+
+    /** \brief bit array to enable/disable specific data writing */
+    bool a_bitMapEnableInVec_[DATA_LOGGER_LEN];
 
     /** \brief file name */
     std::string fileName_;
@@ -661,8 +633,17 @@ private:
     void setFileName(std::string fileName) { fileName_ = fileName; }
 
     /**
+     * @brief handles filesystem
+     * @details checks if path exists,
+     * and if it doesn't and flag set to forcefully create directory, it creates it.
+     * @param forceDir - flag set to optionally force directory creation
+     * @return if the directory exists
+     */
+    bool handleDirectory(const bool forceDir) const;
+
+    /**
      * @brief extracts the extension of the file
-     * @returns extension
+     * @return extension
      */
     extension_E extractExtension() const;
 
@@ -674,9 +655,127 @@ private:
 
     /**
      * @brief writes data to comma seperated value file
-     * @returns validity flag
+     * @return validity flag
      */
     bool writeDataToCsv();
+
+    /**
+     * @brief log the node status
+     * @param node - node to be printed
+     * @return void
+     */
+    void logNodeStatus(const Node_C& node);
+
+    /**
+     * @brief log the grid passed
+     * @param pathVec - path vector
+     * @param start_ - start node
+     * @param goal_ - goal node
+     * @param grid - grid to work with
+     * @return void
+     */
+    void logPath(const std::vector<Node_C>& pathVec,
+                 const Node_C& start_,
+                 const Node_C& goal_,
+                 std::vector<std::vector<int64_t>>& grid);
+
+    /**
+     * @brief logs the cost for reaching points on the grid in the grid shape
+     * @param grid - grid on which algorithm is running
+     * @param pointVec - vector of all points that have been considered. nodes in vector contain cost.
+     * @return void
+     */
+    void logCost(const std::vector<std::vector<int64_t>>& grid,
+                 const std::vector<Node_C>& pointVec);
+
+    /**
+     * @brief logs the grid passed, when the vector
+     * is the path taken in order
+     * @param pathVec - the path vector
+     * @param start - start node
+     * @param goal - goal node
+     * @param grid - reference to grid
+     * @return void
+     */
+    void logPathInOrder(const std::vector<Node_C>& pathVector, const Node_C& start,
+                        const Node_C& goal, std::vector<std::vector<int64_t>>& grid);
 };
+
+/**
+ * @brief function to update vector for logger data
+ * @param dataVec - vector to be updated
+ * @param idx - index
+ * @param grid - grid map
+ * @param pathVec - vector of path
+ * @param pointVec - vector of point
+ * @param startNode - start node
+ * @param goalNode - goal node
+ */
+void updateDataVector(std::vector<data_logger_S>& dataVec,
+                      const uint64_t idx,
+                      const std::vector<std::vector<int64_t>> grid,
+                      const std::vector<Node_C> pathVec,
+                      const std::vector<Node_C> pointVec,
+                      const Node_C startNode,
+                      const Node_C goalNode);
+
+/**
+ * @brief function to encapsulate logger class
+ * @param logBitMap - bitmap of enabling loggers
+ * @param dataVec - vector to be written
+ * @return validity flag
+ */
+bool generateLogs(const uint8_t logBitMap,
+                  const std::vector<data_logger_S>& dataVec);
+
+/**
+ * @brief overload function to encapsulate logger class
+ * @param logBitMap - bitmap of enabling loggers
+ * @param dataVec - vector to be written
+ * @param outExtension - output file extension
+ * @return validity flag
+ */
+bool generateLogs(const uint8_t logBitMap,
+                  const std::vector<data_logger_S>& dataVec,
+                  const std::string& outExtension);
+
+/**
+ * @brief overload function to encapsulate logger class
+ * @param logBitMap - bitmap of enabling loggers
+ * @param dataVec - vector to be written
+ * @param outExtension - output file extension
+ * @param outName - output file name
+ * @return validity flag
+ */
+bool generateLogs(const uint8_t logBitMap,
+                  const std::vector<data_logger_S>& dataVec,
+                  const std::string& outExtension,
+                  const std::string& outName);
+
+/**
+ * @brief function to encapsulate logger class
+ * @param logBitMap - bitmap of enabling loggers
+ * @param dataVec - vector to be written
+ * @param outExtension - output file extension
+ * @param outName - output file name
+ * @param outPath - output path
+ * @return validity flag
+ */
+bool generateLogs(const uint8_t logBitMap,
+                  const std::vector<data_logger_S>& dataVec,
+                  const std::string& outExtension,
+                  const std::string& outName,
+                  const std::string& outPath);
+
+/**
+ * @brief function to encapsulate logger class
+ * @param logBitMap - bitmap of enabling loggers
+ * @param dataVec - vector to be written
+ * @param logObj - logger class object
+ * @return validity flag
+ */
+bool generateLogs(const uint8_t logBitMap,
+                  const std::vector<data_logger_S>& dataVec,
+                  Logger_C& logObj);
 
 #endif /* UTILS_H_ */
