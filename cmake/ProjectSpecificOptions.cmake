@@ -14,6 +14,8 @@ cmake_dependent_option( CUSTOM_DEBUG_HELPER_FUNCION "Build custom debug helper f
 # default ON, change by user input if and only if condition allows (ENABLE_COVERAGE=OFF)
 cmake_dependent_option( PRINTER_DISPLAYS "Printer displays activation" OFF "CUSTOM_DEBUG_HELPER_FUNCION" ON)
 # default ON, change by user input if and only if condition allows (CUSTOM_DEBUG_HELPER_FUNCION=ON)
+cmake_dependent_option( LOGGER_DISPLAYS "Logger displays activation" ON "CUSTOM_DEBUG_HELPER_FUNCION" ON)
+# default ON, change by user input if and only if condition allows (CUSTOM_DEBUG_HELPER_FUNCION=ON)
 
 if(CUSTOM_DEBUG_HELPER_FUNCION)
   add_definitions(-DCUSTOM_DEBUG_HELPER_FUNCION)
@@ -22,3 +24,7 @@ endif(CUSTOM_DEBUG_HELPER_FUNCION)
 if (PRINTER_DISPLAYS)
 add_definitions(-DENABLE_PRINTER_DISPLAY)
 endif(PRINTER_DISPLAYS)
+
+if (LOGGER_DISPLAYS)
+add_definitions(-DENABLE_LOGGER_DISPLAY)
+endif(LOGGER_DISPLAYS)

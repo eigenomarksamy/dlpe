@@ -31,12 +31,14 @@ static void execAStar(Node_C& startNode, Node_C& goalNode, std::vector<std::vect
 #ifdef ENABLE_PRINTER_DISPLAY
         printPath(pathVec, startNode, goalNode, grid);
 #endif /* ENABLE_PRINTER_DISPLAY */
+#ifdef ENABLE_LOGGER_DISPLAY
         std::vector<data_logger_S> dataVec;
         const uint8_t logBitMap = ENABLE_LOGGER_CYCLE | ENABLE_LOGGER_GRID
-                                  | ENABLE_LOGGER_PATH | ENABLE_LOGGER_POINT
+                                  | ENABLE_LOGGER_PATH
                                   | ENABLE_LOGGER_START | ENABLE_LOGGER_GOAL;
         updateDataVector(dataVec, 0, grid, pathVec, pathVec, startNode, goalNode);
         generateLogs(logBitMap, dataVec);
+#endif /* ENABLE_LOGGER_DISPLAY */
     }
 }
 
