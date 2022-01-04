@@ -5,31 +5,14 @@
  * for references see https://github.com/vss2sn/path_planning/blob/master/lib/utils/include/utils/utils.cpp
  */
 
-
-/**
- * <TODO: remove iostream include and use files logging>
- */
-#include <iostream>
-#include <iomanip>
 #include <random>
 #include <stdint.h>
 
 #include "utils.hpp"
 
-// constants
-constexpr int64_t spacing_for_grid = 10;
-
 void Node_C::printStatus() const
 {
-    std::cout << "-----------------" << '\n'
-              << "Node_C          : " << '\n'
-              << "x             : " << x_ << '\n'
-              << "y             : " << y_ << '\n'
-              << "Cost          : " << cost_ << '\n'
-              << "Heuristic cost: " << hCost_ << '\n'
-              << "Id            : " << id_ << '\n'
-              << "Parent id     : " << pId_ << '\n'
-              << "----------------" << '\n';
+    printNodeStatus(*this);
 }
 
 Node_C Node_C::operator+(const Node_C& p) const {
@@ -109,105 +92,6 @@ void makeGrid(std::vector<std::vector<int64_t>>& grid)
         }
     }
 }
-
-void printPath(const std::vector<Node_C>& pathVec, const Node_C& start,
-               const Node_C& goal, std::vector<std::vector<int64_t>>& grid)
-{
-#ifdef CUSTOM_DEBUG_HELPER_FUNCION
-    if (pathVec.empty())
-    {
-        std::cout << "No path exists" << '\n';
-        printGrid(grid);
-        return;
-    }
-    std::cout << "Path (goal to start):" << '\n';
-    for (size_t i = 0; i < pathVec.size(); i++)
-    {
-        if (compareCoordinates(goal, pathVec[i]))
-        {
-            pathVec[i].printStatus();
-            grid[pathVec[i].x_][pathVec[i].y_] = 3;
-            while (pathVec[i].id_ != start.id_)
-            {
-                if (pathVec[i].id_ == pathVec[i].pId_)
-                {
-                    break;
-                }
-                for (size_t j = 0; j < pathVec.size(); j++)
-                {
-                    if (pathVec[i].pId_ == pathVec[j].id_)
-                    {
-                        i = j;
-                        pathVec[j].printStatus();
-                        grid[pathVec[j].x_][pathVec[j].y_] = 3;
-                    }
-                }
-            }
-            break;
-        }
-    }
-    grid[goal.x_][goal.y_] = 6;
-    grid[start.x_][start.y_] = 5;
-    printGrid(grid);
-#endif  // CUSTOM_DEBUG_HELPER_FUNCION
-}
-
-void printCost(const std::vector<std::vector<int64_t>>& grid,
-               const std::vector<Node_C>& pointVec)
-{
-#ifdef CUSTOM_DEBUG_HELPER_FUNCION
-    int64_t n = grid.size();
-    std::vector<Node_C>::const_iterator it_v;
-    for (int64_t i = 0; i < n; i++)
-    {
-        for (int64_t j = 0; j < n; j++)
-        {
-            for (it_v = pointVec.begin(); it_v != pointVec.end(); ++it_v)
-            {
-                if (i == it_v->x_ && j == it_v->y_)
-                {
-                    std::cout << std::setw(spacing_for_grid) << it_v->cost_ << " , ";
-                    break;
-                }
-            }
-            if (it_v == pointVec.end())
-            {
-                std::cout << std::setw(spacing_for_grid) << "  , ";
-            }
-        }
-        std::cout << '\n' << '\n';
-    }
-#endif  // CUSTOM_DEBUG_HELPER_FUNCION
-}
-
-void printPathInOrder(const std::vector<Node_C>& pathVec,
-                      const Node_C& start, const Node_C& goal,
-                      std::vector<std::vector<int64_t>>& grid)
-{
-#ifdef CUSTOM_DEBUG_HELPER_FUNCION
-    if (pathVec.empty())
-    {
-        std::cout << "Path not found" << '\n';
-        printGrid(grid);
-        return;
-    }
-    std::cout << "Path (goal to start):" << '\n';
-    size_t i = 0;
-    while (!compareCoordinates(pathVec[i], goal))
-    {
-        i++;
-    }
-    for (; i > 0; i = i - 1)
-    {
-        pathVec[i].printStatus();
-        grid[pathVec[i].x_][pathVec[i].y_] = 3;
-    }
-    pathVec[0].printStatus();
-    grid[pathVec[0].x_][pathVec[0].y_] = 3;
-    printGrid(grid);
-#endif  // CUSTOM_DEBUG_HELPER_FUNCION
-}
-
 
 void PrioQ_C::clear()
 {
