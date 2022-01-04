@@ -7,9 +7,6 @@
 /* project-specific includes */
 #include "utils.hpp"
 
-// constants
-constexpr int64_t spacing_for_grid = 10;
-
 
 void printNodeStatus(const Node_C& node)
 {

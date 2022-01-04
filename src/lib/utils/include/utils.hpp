@@ -72,6 +72,9 @@ enum data_logger_E
     DATA_LOGGER_LEN
 };
 
+/* constants */
+constexpr int64_t spacing_for_grid = 10;
+
 /**
  * @brief node class
  * <TODO: move all variables to private scope>
@@ -483,8 +486,8 @@ void printNodeStatus(const Node_C& node);
  * @return void
  */
 void printPath(const std::vector<Node_C>& pathVec,
-               const Node_C& start_,
-               const Node_C& goal_,
+               const Node_C& start,
+               const Node_C& goal,
                std::vector<std::vector<int64_t>>& grid);
 
 /**
@@ -658,47 +661,6 @@ private:
      * @return validity flag
      */
     bool writeDataToCsv();
-
-    /**
-     * @brief log the node status
-     * @param node - node to be printed
-     * @return void
-     */
-    void logNodeStatus(const Node_C& node);
-
-    /**
-     * @brief log the grid passed
-     * @param pathVec - path vector
-     * @param start_ - start node
-     * @param goal_ - goal node
-     * @param grid - grid to work with
-     * @return void
-     */
-    void logPath(const std::vector<Node_C>& pathVec,
-                 const Node_C& start_,
-                 const Node_C& goal_,
-                 std::vector<std::vector<int64_t>>& grid);
-
-    /**
-     * @brief logs the cost for reaching points on the grid in the grid shape
-     * @param grid - grid on which algorithm is running
-     * @param pointVec - vector of all points that have been considered. nodes in vector contain cost.
-     * @return void
-     */
-    void logCost(const std::vector<std::vector<int64_t>>& grid,
-                 const std::vector<Node_C>& pointVec);
-
-    /**
-     * @brief logs the grid passed, when the vector
-     * is the path taken in order
-     * @param pathVec - the path vector
-     * @param start - start node
-     * @param goal - goal node
-     * @param grid - reference to grid
-     * @return void
-     */
-    void logPathInOrder(const std::vector<Node_C>& pathVector, const Node_C& start,
-                        const Node_C& goal, std::vector<std::vector<int64_t>>& grid);
 };
 
 /**
@@ -778,4 +740,66 @@ bool generateLogs(const uint8_t logBitMap,
                   const std::vector<data_logger_S>& dataVec,
                   Logger_C& logObj);
 
+
+template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
+void logGrid(std::shared_ptr<std::ostream> p_fileToWrite, const std::vector<std::vector<T>>& grid)
+{
+    int64_t n = grid.size();
+    *p_fileToWrite << "Grid: " << '\n'
+                   << "-Points not considered ---> 0" << '\n'
+                   << "-Obstacles             ---> 1" << '\n'
+                   << "-Points considered     ---> 2" << '\n'
+                   << "-Points in final path  ---> 3" << '\n'
+                   << "-Start point           ---> 4" << '\n'
+                   << "-Goal point            ---> 5" << '\n'
+                   << "-Invalid point         ---> I" << '\n'
+                   << "-Size                  ---> " << n << '\n';
+
+    for (int64_t j = 0; j < n; j++)
+    {
+        *p_fileToWrite << "---";
+    }
+    *p_fileToWrite << '\n';
+
+    for (const auto& row : grid)
+    {
+        for (const auto& ele : row)
+        {
+            if (ele == 1)
+            {
+                *p_fileToWrite << ele << " , ";
+            }
+            else if (ele == 2)
+            {
+                *p_fileToWrite << ele << " , ";
+            }
+            else if (ele == 3)
+            {
+                *p_fileToWrite << ele << " , ";
+            }
+            else if (ele == 4)
+            {
+                *p_fileToWrite << ele << " , ";
+            }
+            else if (ele == 5)
+            {
+                *p_fileToWrite << ele << " , ";
+            }
+            else if (ele == std::numeric_limits<double>::max())
+            {
+                *p_fileToWrite << "I" << " , ";
+            }
+            else
+            {
+                *p_fileToWrite << ele << " , ";
+            }
+        }
+        *p_fileToWrite << '\n' << '\n';
+    }
+
+    for (int64_t j = 0; j < n; j++) {
+        *p_fileToWrite << "---";
+    }
+    *p_fileToWrite << '\n';
+}
 #endif /* UTILS_H_ */
