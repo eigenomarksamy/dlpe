@@ -4,6 +4,10 @@
 # options are:
 ## - build OR clean OR rebuild
 
+script="$0"
+basename="$(dirname $script)"
+cd $basename
+
 build=1
 clean=0
 
