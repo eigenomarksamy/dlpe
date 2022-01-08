@@ -24,6 +24,9 @@
 #include <iomanip>
 #include <filesystem>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <linux/limits.h>
+#include <libgen.h>
 
 /* define colors */
 #define RESET           "\x1b[0m"
@@ -58,6 +61,8 @@
 #define ENABLE_LOGGER_POINT (1 << 4)
 #define ENABLE_LOGGER_START (1 << 5)
 #define ENABLE_LOGGER_GOAL (1 << 6)
+
+#define LINUX_DIR_PROC "/proc/self/exe"
 
 /* define enums */
 enum data_logger_E
@@ -636,15 +641,6 @@ private:
     void setFileName(std::string fileName) { fileName_ = fileName; }
 
     /**
-     * @brief handles filesystem
-     * @details checks if path exists,
-     * and if it doesn't and flag set to forcefully create directory, it creates it.
-     * @param forceDir - flag set to optionally force directory creation
-     * @return if the directory exists
-     */
-    bool handleDirectory(const bool forceDir) const;
-
-    /**
      * @brief extracts the extension of the file
      * @return extension
      */
@@ -802,4 +798,14 @@ void logGrid(std::shared_ptr<std::ostream> p_fileToWrite, const std::vector<std:
     }
     *p_fileToWrite << '\n';
 }
+
+/**
+ * @brief handles filesystem
+ * @details checks if path exists,
+ * and if it doesn't and flag set to forcefully create directory, it creates it.
+ * @param forceDir - flag set to optionally force directory creation
+ * @return if the directory exists
+ */
+bool handleDirectory(std::string& fileName, const bool forceDir);
+
 #endif /* UTILS_H_ */

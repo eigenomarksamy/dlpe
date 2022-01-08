@@ -195,11 +195,15 @@ bool Logger_C::writeDataToTxt()
 {
     bool valid;
 
-    valid = handleDirectory(true);
+    std::string newFileName = fileName_;
+
+    valid = handleDirectory(newFileName, true);
 
     if (valid)
     {
         const std::string booleanArr[] = {"false", "true"};
+
+        setFileName(newFileName);
 
         p_fileToWrite_ = std::make_shared<std::ofstream>(fileName_);
 
@@ -260,33 +264,6 @@ bool Logger_C::writeDataToTxt()
     }
 
     return valid;
-}
-
-bool Logger_C::handleDirectory(const bool forceDir) const
-{
-    bool exists;
-    struct stat buf;
-
-    const std::string tmpFileDir = fileName_.substr(0, fileName_.find_last_of('/') + 1);
-
-    exists  = (stat (tmpFileDir.c_str(), &buf) == 0);
-
-    if (!exists)
-    {
-        if(forceDir)
-        {
-            std::error_code ec;
-            if (!std::filesystem::create_directories(tmpFileDir, ec))
-            {
-                exists = false;
-            }
-            else
-            {
-                exists = true;
-            }
-        }
-    }
-    return exists;
 }
 
 bool Logger_C::writeDataToCsv()
@@ -410,4 +387,44 @@ static void logPathInOrder(std::shared_ptr<std::ostream> p_fileToWrite,
     grid[pathVec[0].x_][pathVec[0].y_] = 3;
     logGrid(p_fileToWrite, grid);
 #endif  // CUSTOM_DEBUG_HELPER_FUNCION
+}
+
+bool handleDirectory(std::string& fileName, const bool forceDir)
+{
+    bool exists;
+    struct stat buf;
+
+    char result[PATH_MAX];
+    ssize_t count = readlink(LINUX_DIR_PROC, result, PATH_MAX);
+    std::string path;
+    if (count != -1) {
+        path = static_cast<std::string>(dirname(result));
+    }
+
+    const std::string tmpFileDir = path + "/" + fileName.substr(0, fileName.find_last_of('/') + 1);
+
+    exists  = (stat (tmpFileDir.c_str(), &buf) == 0);
+
+    if (!exists)
+    {
+        if(forceDir)
+        {
+            std::error_code ec;
+            if (!std::filesystem::create_directories(tmpFileDir, ec))
+            {
+                exists = false;
+            }
+            else
+            {
+                exists = true;
+                fileName = path + "/" + fileName;
+            }
+        }
+    }
+    else
+    {
+        fileName = path + "/" + fileName;
+    }
+
+    return exists;
 }
